@@ -1,0 +1,162 @@
+{% extends "layout.html" %}
+{% block titulo %}Ubicación{% endblock %}
+
+{% block contenido %}
+
+<!-- Encabezado -->
+<section style="padding: 5rem 0 3rem; background: linear-gradient(135deg, #eff6ff, #ecfeff); border-bottom: 1px solid #e2e8f0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="badge badge-azul mb-4">
+      <i class="fas fa-map-marker-alt text-xs"></i> Encuéntranos
+    </div>
+    <h1 class="seccion-titulo mb-4">
+      Nuestra <span class="texto-degradado">Ubicación</span>
+    </h1>
+    <div class="seccion-linea"></div>
+    <p class="mt-5 text-lg max-w-xl" style="color:#475569">
+      Estamos ubicados en el corazón de Ciudad de Panamá, listos para recibirte y hablar sobre cómo impulsar tu empresa.
+    </p>
+  </div>
+</section>
+
+
+<!-- Mapa + Información -->
+<section class="seccion">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-5 gap-10 items-start">
+
+      <!-- Mapa (ocupa 3 de 5 columnas) -->
+      <div class="lg:col-span-3 animar-entrada">
+        <div class="contenedor-mapa" style="height: 480px;">
+          <!-- Google Maps embed — Ciudad de Panamá -->
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126007.99773095834!2d-79.60069697500001!3d8.993888699999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8faca8ef71bca279%3A0x2a3012ca579d3515!2sCiudad%20de%20Panam%C3%A1!5e0!3m2!1ses!2spa!4v1700000000000!5m2!1ses!2spa"
+            height="480"
+            style="border:0; filter: saturate(0.9) hue-rotate(210deg) brightness(1.05);"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Ubicación SUCESOS y MÁS en Ciudad de Panamá">
+          </iframe>
+        </div>
+        <!-- Botón abrir en Google Maps -->
+        <a href="https://maps.google.com/?q=Ciudad+de+Panama+Panama"
+           target="_blank" rel="noopener noreferrer"
+           class="btn-secundario mt-4 text-sm w-full justify-center">
+          <i class="fas fa-external-link-alt"></i>Abrir en Google Maps
+        </a>
+      </div>
+
+      <!-- Info lateral -->
+      <div class="lg:col-span-2 space-y-6 animar-entrada" style="transition-delay:.1s">
+
+        <!-- Tarjeta dirección -->
+        <div class="tarjeta p-7">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center"
+                 style="background:rgba(37,99,235,0.1); color:#2563eb">
+              <i class="fas fa-building text-lg"></i>
+            </div>
+            <h2 class="font-display font-700 text-lg" style="color:#0f172a">Oficina Principal</h2>
+          </div>
+
+          <div class="space-y-4">
+            {% for icono, etiqueta, info, color in [
+              ('fas fa-map-marker-alt', 'Dirección',   'Punta Pacífica, Edificio Plaza Credicorp Bank, Piso 12, Ciudad de Panamá, República de Panamá', '#ef4444'),
+              ('fas fa-phone-alt',      'Teléfono',    '+507 6000-0000',  '#22c55e'),
+              ('fas fa-mobile-alt',     'WhatsApp',    '+507 6100-0000',  '#25d366'),
+              ('fas fa-envelope',       'Correo',      'info@sucesosymas.com', '#2563eb'),
+              ('fas fa-clock',          'Horario',     'Lun – Vie: 8:00 AM – 6:00 PM\nSáb: 9:00 AM – 1:00 PM', '#f59e0b'),
+            ] %}
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                   style="background:{{ color }}15; color:{{ color }}">
+                <i class="{{ icono }} text-xs"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider" style="color:#94a3b8">{{ etiqueta }}</p>
+                <p class="text-sm mt-0.5" style="color:#0f172a; white-space: pre-line">{{ info }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Cómo llegar -->
+        <div class="tarjeta p-7">
+          <h3 class="font-display font-700 text-base mb-4" style="color:#0f172a">
+            <i class="fas fa-route mr-2" style="color:#2563eb"></i>Cómo Llegar
+          </h3>
+          <div class="space-y-3">
+            {% for modo, icono, desc in [
+              ('Metro',     'fas fa-subway',     'Estación Iglesia del Carmen, Línea 1 (10 min caminando)'),
+              ('Autobús',   'fas fa-bus',        'Rutas hacia Marbella, parada Credicorp Bank'),
+              ('Automóvil', 'fas fa-car',        'Estacionamiento disponible en el edificio, Nivel B1'),
+              ('Taxi/Uber', 'fas fa-taxi',       'Disponibles en la Av. Balboa y Calle 50'),
+            ] %}
+            <div class="flex items-start gap-3">
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                   style="background:rgba(37,99,235,0.08); color:#2563eb">
+                <i class="{{ icono }} text-xs"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold" style="color:#0f172a">{{ modo }}</p>
+                <p class="text-xs" style="color:#64748b">{{ desc }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Agendar visita -->
+        <div class="p-5 rounded-2xl text-center"
+             style="background: linear-gradient(135deg, #1e40af, #0e7490)">
+          <i class="fas fa-calendar-check text-2xl text-white mb-3"></i>
+          <p class="font-display font-700 text-white mb-2">¿Quieres visitarnos?</p>
+          <p class="text-sm mb-4" style="color:rgba(255,255,255,0.8)">Agenda una cita y te recibiremos con café ☕</p>
+          <a href="{{ url_for('contacto') }}"
+             class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-700 font-display transition-all"
+             style="background:white; color:#1e40af"
+             onmouseover="this.style.transform='translateY(-2px)'"
+             onmouseout="this.style.transform=''">
+            <i class="fas fa-envelope text-xs"></i>Agendar Cita
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Ciudades con presencia -->
+<section class="seccion seccion-fondo-alt">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <h2 class="seccion-titulo mb-2">Presencia Regional</h2>
+      <div class="seccion-linea mx-auto"></div>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {% for ciudad, pais, icono_pais in [
+        ('Ciudad de Panamá', 'Panamá',   '🇵🇦'),
+        ('San José',         'Costa Rica','🇨🇷'),
+        ('Bogotá',           'Colombia',  '🇨🇴'),
+        ('Miami',            'EE.UU.',    '🇺🇸'),
+      ] %}
+      <div class="tarjeta p-6 text-center animar-entrada" style="transition-delay: {{ loop.index0 * 0.08 }}s">
+        <span class="text-4xl block mb-3">{{ icono_pais }}</span>
+        <h3 class="font-display font-700 text-sm mb-1" style="color:#0f172a">{{ ciudad }}</h3>
+        <p class="text-xs" style="color:#64748b">{{ pais }}</p>
+        {% if loop.first %}
+        <span class="badge badge-verde mt-2 text-xs mx-auto" style="width:fit-content; font-size:.65rem">
+          Sede Principal
+        </span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
