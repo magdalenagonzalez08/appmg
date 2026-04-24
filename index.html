@@ -1,0 +1,287 @@
+{% extends "layout.html" %}
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+
+<!-- HERO ─────────────────────────────────────── -->
+<section style="min-height:90vh;display:flex;align-items:center;padding:5rem 0 4rem">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <div class="grid lg:grid-cols-2 gap-14 items-center">
+
+      <!-- Texto -->
+      <div>
+        <div class="inline-flex items-center gap-2 badge badge-azul mb-6 animar-entrada">
+          <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+          Líder en Ciberseguridad · Ciudad de Panamá
+        </div>
+        <h1 class="titulo-hover font-outfit font-900 mb-6 animar-entrada"
+            style="font-size:clamp(2.8rem,6vw,5rem);line-height:1.05;letter-spacing:-0.04em;transition-delay:.1s">
+          Protegemos y<br>
+          <span class="texto-degradado">escalamos</span><br>
+          tu empresa digital
+        </h1>
+        <p class="text-xl leading-relaxed mb-8 animar-entrada"
+           style="color:#475569;max-width:500px;font-size:1.1rem;transition-delay:.2s">
+          Ciberseguridad, desarrollo web e infraestructura Docker para que tu negocio crezca seguro.
+        </p>
+        <div class="flex flex-wrap gap-4 animar-entrada" style="transition-delay:.3s">
+          <a href="{{ url_for('servicios') }}" class="btn-primario text-base px-7 py-3.5">
+            <i class="fas fa-th-large"></i>Ver Servicios y Cotizar
+          </a>
+          <a href="{{ url_for('contacto') }}" class="btn-secundario text-base px-7 py-3.5">
+            <i class="fas fa-comments"></i>Consulta Gratis
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-6 mt-12 pt-8 animar-entrada"
+             style="border-top:1px solid #e2e8f0;transition-delay:.4s">
+          {% for num, suf, label in [('50','+','Clientes'),('8','+','Años exp.'),('99','%','Satisfacción')] %}
+          <div>
+            <p class="text-3xl font-outfit font-900 texto-degradado leading-none">
+              <span data-objetivo="{{ num }}">{{ num }}</span>{{ suf }}
+            </p>
+            <p class="text-sm mt-1" style="color:#64748b">{{ label }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Visual tipo terminal -->
+      <div class="hidden lg:block relative animar-entrada" style="transition-delay:.15s">
+        <div class="tarjeta p-7 max-w-md ml-auto">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="w-3 h-3 rounded-full bg-red-400"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
+            <span class="w-3 h-3 rounded-full bg-green-400"></span>
+            <span class="text-xs font-mono ml-3" style="color:#94a3b8">security-scan.sh</span>
+          </div>
+          <div class="font-mono text-sm space-y-2.5" style="color:#334155">
+            <p><span style="color:#2563eb">$</span> <span style="color:#0891b2">./iniciar</span> análisis_seguridad</p>
+            {% for msg in ['Firewall activo','Puertos monitoreados','SSL/TLS válido','Parches aplicados'] %}
+            <p class="flex items-center gap-2">
+              <i class="fas fa-check-circle text-xs" style="color:#22c55e"></i>{{ msg }}
+            </p>
+            {% endfor %}
+            <p class="flex items-center gap-2">
+              <i class="fas fa-sync-alt text-xs text-blue-500" style="animation:spin 2s linear infinite"></i>
+              Escaneando vulnerabilidades...
+            </p>
+            <div class="mt-3 p-3 rounded-xl" style="background:#f0f9ff">
+              <p class="text-xs" style="color:#0891b2">
+                <i class="fas fa-shield-alt mr-1"></i>
+                Sistema protegido · Nivel de riesgo: <strong>Bajo</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta flotante Docker -->
+        <div class="tarjeta p-4 absolute -bottom-3 -left-8 w-52" style="animation:flotar 7s ease-in-out infinite">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                 style="background:rgba(37,99,235,0.08);color:#2563eb">
+              <i class="fab fa-docker"></i>
+            </div>
+            <div>
+              <p class="text-xs font-outfit font-700" style="color:#0f172a">Docker</p>
+              <p class="text-xs" style="color:#64748b">3 contenedores activos</p>
+            </div>
+          </div>
+        </div>
+        <!-- Tarjeta flotante uptime -->
+        <div class="tarjeta p-4 absolute -top-3 -right-6 w-44" style="animation:flotar 9s ease-in-out infinite;animation-delay:-4s">
+          <p class="text-xs font-outfit font-700 mb-1" style="color:#0f172a">Uptime</p>
+          <p class="text-2xl font-outfit font-900 texto-degradado">99.9%</p>
+          <div class="flex gap-0.5 mt-2">
+            {% for i in range(18) %}<div class="h-1.5 flex-1 rounded-full" style="background:#22c55e;opacity:{{ 0.3 + i*0.04 }}"></div>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- Stack tecnológico ────────────────────────── -->
+<div style="background:white;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:2rem 0">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <p class="text-center text-xs font-outfit font-700 uppercase tracking-widest mb-6" style="color:#cbd5e1">Tecnologías que dominamos</p>
+    <div class="flex flex-wrap items-center justify-center gap-8 md:gap-14">
+      {% for nombre, icono, color in [
+        ('Python','fab fa-python','#3776ab'),('Docker','fab fa-docker','#2496ed'),
+        ('Linux','fab fa-linux','#f6a800'),('JavaScript','fab fa-js','#f0db4f'),
+        ('GitHub','fab fa-github','#24292e'),('AWS','fab fa-aws','#ff9900'),
+        ('HTML5','fab fa-html5','#e34f26'),('Node.js','fab fa-node-js','#339933'),
+      ] %}
+      <div class="flex items-center gap-2 group">
+        <i class="{{ icono }} text-2xl transition-transform duration-200 group-hover:scale-125" style="color:{{ color }}"></i>
+        <span class="text-sm" style="color:#94a3b8">{{ nombre }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+
+<!-- Servicios destacados ─────────────────────── -->
+<section class="seccion">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+      <div>
+        <div class="badge badge-azul mb-3"><i class="fas fa-star text-xs"></i>Más solicitados</div>
+        <h2 class="seccion-titulo titulo-hover">Servicios Populares</h2>
+        <div class="seccion-linea mt-2"></div>
+      </div>
+      <a href="{{ url_for('servicios') }}" class="btn-secundario text-sm shrink-0">
+        <i class="fas fa-th-large"></i>Ver catálogo completo
+      </a>
+    </div>
+
+    {% set ids_en_carrito = carrito | map(attribute='id') | list %}
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-7">
+      {% for srv in servicios_destacados %}
+      <div class="servicio-card animar-entrada" style="transition-delay:{{ loop.index0 * 0.08 }}s">
+        <div class="popular-ribbon"><i class="fas fa-star text-xs mr-1"></i>Popular</div>
+        <div class="p-7">
+          <div class="icono-servicio mb-5"><i class="{{ srv.icono }}"></i></div>
+          <h3 class="font-outfit font-700 text-lg mb-2" style="color:#0f172a">{{ srv.nombre }}</h3>
+          <p class="text-sm mb-4" style="color:#64748b">{{ srv.descripcion[:100] }}…</p>
+          <div class="flex items-center justify-between mb-5 py-3" style="border-top:1px solid #f1f5f9">
+            <p class="font-outfit font-900 text-xl texto-degradado">${{ "%.0f"|format(srv.precio) }}</p>
+            <span class="text-xs" style="color:#94a3b8">{{ srv.unidad }}</span>
+          </div>
+          {% if srv.id in ids_en_carrito %}
+          <div class="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-outfit font-600"
+               style="background:rgba(16,185,129,0.08);color:#059669;border:1.5px solid rgba(16,185,129,0.2)">
+            <i class="fas fa-check-circle"></i>En cotización
+          </div>
+          {% else %}
+          <form method="POST" action="{{ url_for('agregar_cotizacion', sid=srv.id) }}">
+            <button type="submit" class="btn-primario w-full justify-center text-sm">
+              <i class="fas fa-plus-circle text-xs"></i>Agregar a Cotización
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- Noticias ────────────────────────────────── -->
+<section class="seccion seccion-fondo-alt">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+      <div>
+        <div class="badge badge-cian mb-3"><i class="fas fa-newspaper text-xs"></i>Blog / Noticias</div>
+        <h2 class="seccion-titulo titulo-hover">Últimas Noticias</h2>
+        <div class="seccion-linea mt-2"></div>
+      </div>
+      <a href="{{ url_for('admin') }}" class="btn-secundario text-sm shrink-0">
+        <i class="fas fa-plus-circle"></i>Gestionar
+      </a>
+    </div>
+
+    {% if noticias %}
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for n in noticias %}
+      <article class="tarjeta overflow-hidden group animar-entrada" style="transition-delay:{{ loop.index0 * 0.08 }}s">
+        <div class="h-44 overflow-hidden relative" style="background:linear-gradient(135deg,#eff6ff,#ecfeff)">
+          <img src="{{ url_for('static', filename='images/'+(n.imagen or 'noticia-default.png')) }}"
+               alt="{{ n.titulo }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+               onerror="this.src='';this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center\'><i class=\'fas fa-newspaper text-4xl\' style=\'color:#bfdbfe\'></i></div>'">
+          <div class="absolute top-3 left-3">
+            <span class="badge badge-azul text-xs">{{ n.categoria }}</span>
+          </div>
+        </div>
+        <div class="p-6">
+          <p class="text-xs mb-2.5 flex items-center gap-1.5" style="color:#94a3b8">
+            <i class="fas fa-calendar-alt"></i>{{ n.fecha }}
+            {% if n.fuente %}<span class="punto-decorativo"></span>
+            <i class="fas fa-link"></i><span class="truncate max-w-[100px]">{{ n.fuente }}</span>{% endif %}
+          </p>
+          <h3 class="font-outfit font-700 text-base leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-2" style="color:#0f172a">
+            {{ n.titulo }}
+          </h3>
+          <p class="text-sm leading-relaxed" style="color:#64748b;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">
+            {{ n.contenido }}
+          </p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+      <p class="text-lg font-outfit font-700 mb-4" style="color:#94a3b8">Sin noticias publicadas aún.</p>
+      <a href="{{ url_for('admin') }}" class="btn-primario">
+        <i class="fas fa-plus"></i>Publicar primera noticia
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- Vista previa clientes ───────────────────── -->
+<section class="seccion">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10">
+      <div class="badge badge-cian mb-3 mx-auto" style="width:fit-content"><i class="fas fa-handshake text-xs"></i>Clientes</div>
+      <h2 class="seccion-titulo titulo-hover">Empresas que confían en nosotros</h2>
+      <div class="seccion-linea mx-auto mt-2"></div>
+    </div>
+    {% if clientes %}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+      {% for c in clientes %}
+      <a href="{{ url_for('clientes') }}" class="cliente-card animar-entrada" style="transition-delay:{{ loop.index0 * 0.06 }}s">
+        <div class="w-14 h-14 rounded-xl mx-auto mb-2.5 overflow-hidden flex items-center justify-center"
+             style="background:rgba(37,99,235,0.06)">
+          <img src="{{ url_for('static', filename='images/'+(c.logo or 'cliente-default.png')) }}"
+               alt="{{ c.nombre }}" class="w-full h-full object-cover"
+               onerror="this.src='';this.parentElement.innerHTML='<i class=\'fas fa-building text-xl\' style=\'color:#93c5fd\'></i>'">
+        </div>
+        <p class="text-xs font-outfit font-700 text-center" style="color:#0f172a">{{ c.nombre }}</p>
+        <span class="badge badge-azul mt-2 mx-auto" style="width:fit-content;font-size:.6rem">{{ c.sector }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-8">
+      <a href="{{ url_for('clientes') }}" class="btn-secundario">
+        <i class="fas fa-users"></i>Ver todos los clientes
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- CTA final ───────────────────────────────── -->
+<section class="seccion">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="tarjeta p-12 animar-entrada" style="background:linear-gradient(135deg,#1e3a8a,#0e7490)">
+      <h2 class="text-3xl font-outfit font-800 text-white mb-4">
+        ¿Listo para proteger y escalar tu empresa?
+      </h2>
+      <p class="text-lg mb-8" style="color:rgba(255,255,255,0.8)">
+        Cotiza los servicios que necesitas y genera tu factura al instante.
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href="{{ url_for('servicios') }}" class="btn-blanco">
+          <i class="fas fa-th-large"></i>Cotizar Servicios
+        </a>
+        <a href="{{ url_for('contacto') }}" class="btn-blanco-outline">
+          <i class="fas fa-envelope"></i>Consulta Gratuita
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+</style>
+
+{% endblock %}
