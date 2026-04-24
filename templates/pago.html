@@ -1,0 +1,233 @@
+{% extends "layout.html" %}
+{% block titulo %}Confirmar Pago — {{ cotizacion.referencia }}{% endblock %}
+
+{% block contenido %}
+
+<section class="page-header">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="badge badge-azul mb-4"><i class="fas fa-lock text-xs"></i>Proceso de Pago</div>
+    <h1 class="seccion-titulo mb-2">Confirmar Pago</h1>
+    <div class="seccion-linea"></div>
+    <p class="mt-4 text-base" style="color:#475569">
+      Revisa el resumen y selecciona un método de pago.
+      <strong>Este es un prototipo universitario</strong> — ningún cargo real será efectuado.
+    </p>
+  </div>
+</section>
+
+
+<section class="seccion">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Aviso de simulación -->
+    <div class="flex items-start gap-3 p-4 rounded-xl mb-8"
+         style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);color:#92400e">
+      <i class="fas fa-flask mt-0.5 shrink-0" style="color:#f59e0b"></i>
+      <div>
+        <p class="font-outfit font-700 text-sm">Pago de prueba — Prototipo universitario</p>
+        <p class="text-xs mt-0.5">
+          Este sistema simula el flujo de pago para fines académicos.
+          No se procesará ningún cargo real ni se solicitarán datos bancarios reales.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-5 gap-8 items-start">
+
+      <!-- Formulario de pago -->
+      <div class="md:col-span-3">
+        <div class="tarjeta p-8 animar-entrada">
+
+          <h2 class="font-outfit font-700 text-xl mb-6" style="color:#0f172a">
+            <i class="fas fa-credit-card mr-2" style="color:#2563eb"></i>Método de Pago
+          </h2>
+
+          <form method="POST" action="{{ url_for('pago', cot_id=cotizacion.id) }}" novalidate>
+
+            <!-- Opciones de método -->
+            <div class="space-y-3 mb-8">
+
+              {% for valor, icono, etiqueta, descripcion in [
+                ('tarjeta',        'fas fa-credit-card',    'Tarjeta de crédito / débito',  'Visa, Mastercard, American Express'),
+                ('transferencia',  'fas fa-university',     'Transferencia bancaria',        'Banco Nacional, BAC, Banistmo, etc.'),
+                ('yappy',          'fas fa-mobile-alt',     'Yappy',                        'Pago rápido desde tu celular'),
+              ] %}
+              <label class="metodo-pago-opcion" for="metodo-{{ valor }}">
+                <input type="radio" name="metodo_pago" id="metodo-{{ valor }}"
+                       value="{{ valor }}" class="sr-only" required>
+                <div class="flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all"
+                     style="border:2px solid #e2e8f0"
+                     id="card-{{ valor }}"
+                     onclick="seleccionarMetodo('{{ valor }}')">
+                  <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0"
+                       style="background:rgba(37,99,235,0.08);color:#2563eb">
+                    <i class="{{ icono }}"></i>
+                  </div>
+                  <div class="flex-1">
+                    <p class="font-outfit font-700 text-sm" style="color:#0f172a">{{ etiqueta }}</p>
+                    <p class="text-xs" style="color:#94a3b8">{{ descripcion }}</p>
+                  </div>
+                  <div class="w-5 h-5 rounded-full flex-shrink-0"
+                       style="border:2px solid #e2e8f0" id="radio-{{ valor }}"></div>
+                </div>
+              </label>
+              {% endfor %}
+
+            </div>
+
+            <!-- Campos de simulación (tarjeta) -->
+            <div id="campos-tarjeta" class="hidden mb-6 space-y-3 p-4 rounded-xl"
+                 style="background:#f8fafc;border:1px solid #e2e8f0">
+              <p class="text-xs font-outfit font-700 mb-3" style="color:#475569">
+                <i class="fas fa-info-circle mr-1 text-blue-500"></i>
+                Datos simulados — no uses información real
+              </p>
+              <div>
+                <label class="campo-label text-xs">Número de tarjeta (simulado)</label>
+                <input type="text" placeholder="4242 4242 4242 4242" class="campo-input text-sm" disabled
+                       value="4242 4242 4242 4242">
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="campo-label text-xs">Vencimiento</label>
+                  <input type="text" placeholder="12/26" class="campo-input text-sm" disabled value="12/26">
+                </div>
+                <div>
+                  <label class="campo-label text-xs">CVV</label>
+                  <input type="text" placeholder="123" class="campo-input text-sm" disabled value="***">
+                </div>
+              </div>
+            </div>
+
+            <!-- Campos de transferencia -->
+            <div id="campos-transferencia" class="hidden mb-6 p-4 rounded-xl"
+                 style="background:#f8fafc;border:1px solid #e2e8f0">
+              <p class="text-xs font-outfit font-700 mb-3" style="color:#475569">Datos bancarios de SUCESOS y MÁS</p>
+              {% for k, v in [('Banco','Banco Nacional de Panamá'),('Cuenta','000-000-000000'),('Titular','SUCESOS y MÁS S.A.'),('Referencia',cotizacion.referencia)] %}
+              <div class="flex justify-between text-xs py-1.5" style="border-bottom:1px solid #e2e8f0">
+                <span style="color:#94a3b8">{{ k }}</span>
+                <span class="font-semibold font-mono" style="color:#0f172a">{{ v }}</span>
+              </div>
+              {% endfor %}
+            </div>
+
+            <!-- Campos de Yappy -->
+            <div id="campos-yappy" class="hidden mb-6 p-4 rounded-xl"
+                 style="background:#f8fafc;border:1px solid #e2e8f0">
+              <p class="text-xs font-outfit font-700 mb-3" style="color:#475569">Pago por Yappy</p>
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-16 rounded-xl flex items-center justify-center text-3xl"
+                     style="background:#f0fdf4;border:1px solid #bbf7d0">📱</div>
+                <div>
+                  <p class="text-sm font-semibold" style="color:#0f172a">+507 6000-0000</p>
+                  <p class="text-xs" style="color:#64748b">Enviar a nombre de SUCESOS y MÁS</p>
+                  <p class="text-xs mt-1" style="color:#94a3b8">
+                    Referencia: <span class="font-mono">{{ cotizacion.referencia }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-pagar"
+                    class="btn-primario w-full justify-center py-4 text-base mt-2">
+              <i class="fas fa-check-circle"></i>
+              Confirmar pago de prueba — ${{ "%.2f"|format(cotizacion.total) }}
+            </button>
+
+            <p class="text-center text-xs mt-3" style="color:#94a3b8">
+              <i class="fas fa-shield-alt mr-1"></i>
+              Datos cifrados · Sin cobros reales · Solo fines académicos
+            </p>
+
+          </form>
+        </div>
+      </div>
+
+
+      <!-- Resumen del pedido -->
+      <div class="md:col-span-2 animar-entrada" style="transition-delay:.1s">
+        <div class="tarjeta p-6 sticky top-24">
+
+          <h3 class="font-outfit font-700 text-base mb-4" style="color:#0f172a">
+            <i class="fas fa-receipt mr-2" style="color:#2563eb"></i>Resumen del pedido
+          </h3>
+
+          <div class="text-xs font-mono mb-4 px-2 py-1 rounded-lg"
+               style="background:#f8fafc;color:#64748b;border:1px solid #e2e8f0">
+            Ref: {{ cotizacion.referencia }}
+          </div>
+
+          <div class="space-y-2.5 mb-4">
+            {% for d in detalles %}
+            <div class="flex justify-between text-sm">
+              <span class="truncate max-w-[140px]" style="color:#475569">{{ d.servicio }}</span>
+              <span class="shrink-0 ml-2 font-mono text-xs font-semibold" style="color:#0f172a">
+                ${{ "%.2f"|format(d.subtotal_linea) }}
+              </span>
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="pt-3 space-y-1.5" style="border-top:1px solid #e2e8f0">
+            <div class="flex justify-between text-xs" style="color:#64748b">
+              <span>Subtotal</span><span class="font-mono">${{ "%.2f"|format(cotizacion.subtotal) }}</span>
+            </div>
+            <div class="flex justify-between text-xs" style="color:#64748b">
+              <span>ITBMS (7%)</span><span class="font-mono">${{ "%.2f"|format(cotizacion.itbms) }}</span>
+            </div>
+          </div>
+
+          <div class="mt-3 p-3 rounded-xl" style="background:linear-gradient(135deg,#1e40af,#0e7490)">
+            <div class="flex justify-between items-center">
+              <p class="text-xs text-white font-semibold">Total</p>
+              <p class="text-xl font-outfit font-900 text-white">${{ "%.2f"|format(cotizacion.total) }}</p>
+            </div>
+          </div>
+
+          {% if cotizacion.cliente_nombre %}
+          <div class="mt-4 pt-4 space-y-1.5" style="border-top:1px solid #f1f5f9">
+            <p class="text-xs font-semibold" style="color:#94a3b8">Solicitante</p>
+            <p class="text-sm font-semibold" style="color:#0f172a">{{ cotizacion.cliente_nombre }}</p>
+            <p class="text-xs" style="color:#64748b">{{ cotizacion.cliente_correo }}</p>
+          </div>
+          {% endif %}
+
+          <div class="mt-4">
+            <a href="{{ url_for('cotizacion') }}" class="text-xs flex items-center gap-1"
+               style="color:#94a3b8"
+               onmouseover="this.style.color='#2563eb'"
+               onmouseout="this.style.color='#94a3b8'">
+              <i class="fas fa-arrow-left text-xs"></i>Volver a la cotización
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+
+{% block scripts_extra %}
+<script>
+function seleccionarMetodo(valor) {
+  // Desmarcar todos
+  ['tarjeta','transferencia','yappy'].forEach(m => {
+    document.getElementById('card-' + m).style.borderColor = '#e2e8f0';
+    document.getElementById('radio-' + m).style.background = '';
+    document.getElementById('radio-' + m).style.borderColor = '#e2e8f0';
+    document.getElementById('campos-' + m).classList.add('hidden');
+  });
+
+  // Marcar el seleccionado
+  document.getElementById('card-' + valor).style.borderColor = '#2563eb';
+  document.getElementById('radio-' + valor).style.background = '#2563eb';
+  document.getElementById('radio-' + valor).style.borderColor = '#2563eb';
+  document.getElementById('campos-' + valor).classList.remove('hidden');
+  document.querySelector('#metodo-' + valor).checked = true;
+}
+</script>
+{% endblock %}

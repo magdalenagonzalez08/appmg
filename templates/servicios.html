@@ -1,0 +1,206 @@
+{% extends "layout.html" %}
+{% block titulo %}Servicios{% endblock %}
+
+{% block contenido %}
+
+<!-- Encabezado ─────────────────────────────────── -->
+<section class="page-header">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="badge badge-azul mb-4"><i class="fas fa-th-large text-xs"></i>Catálogo de Servicios</div>
+    <h1 class="seccion-titulo titulo-hover mb-4">
+      Elige los servicios<br>
+      <span class="texto-degradado">que tu empresa necesita</span>
+    </h1>
+    <div class="seccion-linea"></div>
+    <p class="mt-5 text-lg max-w-xl" style="color:#475569">
+      Agrega servicios a tu cotización, revisa los detalles y genera una factura al instante. Sin compromisos.
+    </p>
+
+    <!-- Barra de cotización activa (si hay items) -->
+    {% if total_items_carrito > 0 %}
+    <div class="cotizacion-activa-bar mt-8">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.2)">
+          <i class="fas fa-clipboard-check text-white"></i>
+        </div>
+        <div>
+          <p class="font-outfit font-700 text-white text-sm">
+            Tienes {{ total_items_carrito }} servicio(s) en tu cotización
+          </p>
+          <p class="text-xs" style="color:rgba(255,255,255,0.75)">
+            Subtotal: ${{ "%.2f"|format(subtotal_carrito) }} (sin ITBMS)
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-2 shrink-0">
+        <a href="{{ url_for('cotizacion') }}" class="btn-blanco text-sm">
+          <i class="fas fa-eye"></i>Ver Cotización
+        </a>
+        <a href="{{ url_for('factura') }}" class="btn-blanco-outline text-sm">
+          <i class="fas fa-file-invoice"></i>Facturar
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- Filtros por categoría ─────────────────────── -->
+<section style="background:white; border-bottom:1px solid #e2e8f0; padding: 0.1rem 0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-2 py-4 overflow-x-auto">
+      <a href="{{ url_for('servicios') }}"
+         class="filtro-tab {% if categoria_activa == 'Todos' %}activo{% endif %}">
+        <i class="fas fa-border-all text-xs"></i>Todos
+      </a>
+      {% for cat in categorias %}
+      <a href="{{ url_for('servicios', categoria=cat) }}"
+         class="filtro-tab {% if categoria_activa == cat %}activo{% endif %}">
+        {% if cat == 'Seguridad' %}<i class="fas fa-shield-alt text-xs"></i>
+        {% elif cat == 'Desarrollo' %}<i class="fas fa-code text-xs"></i>
+        {% elif cat == 'Infraestructura' %}<i class="fas fa-server text-xs"></i>
+        {% elif cat == 'Soporte' %}<i class="fas fa-headset text-xs"></i>
+        {% elif cat == 'Consultoría' %}<i class="fas fa-user-tie text-xs"></i>
+        {% elif cat == 'Cloud' %}<i class="fas fa-cloud text-xs"></i>
+        {% endif %}
+        {{ cat }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- Grid de servicios ────────────────────────── -->
+<section class="seccion">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    {% if servicios %}
+
+    <!-- IDs de los servicios ya en el carrito (para marcar botones) -->
+    {% set ids_en_carrito = carrito | map(attribute='id') | list %}
+
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-7">
+      {% for srv in servicios %}
+
+      <!-- Verificar si está en el carrito -->
+      {% set en_carrito = srv.id in ids_en_carrito %}
+
+      <article class="servicio-card animar-entrada {% if srv.popular %}card-popular{% endif %}"
+               style="transition-delay:{{ loop.index0 * 0.07 }}s">
+
+        {% if srv.popular %}
+        <div class="popular-ribbon">
+          <i class="fas fa-star text-xs mr-1"></i>Popular
+        </div>
+        {% endif %}
+
+        <!-- Cabecera del servicio -->
+        <div class="p-7 pb-5">
+          <div class="flex items-start justify-between gap-3 mb-5">
+            <div class="icono-servicio">
+              <i class="{{ srv.icono }}"></i>
+            </div>
+            <span class="badge badge-{{ 'azul' if srv.categoria == 'Seguridad' else 'cian' if srv.categoria == 'Infraestructura' else 'verde' if srv.categoria == 'Soporte' else 'azul' }}">
+              {{ srv.categoria }}
+            </span>
+          </div>
+
+          <h3 class="font-outfit font-700 text-lg leading-snug mb-2" style="color:#0f172a">
+            {{ srv.nombre }}
+          </h3>
+          <p class="text-sm leading-relaxed" style="color:#64748b">{{ srv.descripcion }}</p>
+        </div>
+
+        <!-- Precio + duración -->
+        <div class="px-7 py-4" style="background:#f8fafc; border-top:1px solid #f1f5f9; border-bottom:1px solid #f1f5f9;">
+          <div class="flex items-end justify-between">
+            <div>
+              <span class="text-2xl font-outfit font-800 texto-degradado">${{ "%.0f"|format(srv.precio) }}</span>
+              <span class="text-xs ml-1" style="color:#94a3b8">{{ srv.unidad }}</span>
+            </div>
+            <div class="text-right">
+              <p class="text-xs" style="color:#94a3b8">
+                <i class="fas fa-clock mr-1"></i>{{ srv.duracion }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incluye -->
+        <div class="p-7 pt-5">
+          <p class="text-xs font-semibold uppercase tracking-wider mb-3" style="color:#94a3b8">
+            Incluye:
+          </p>
+          <ul class="space-y-1.5 mb-6">
+            {% for item in srv.incluye[:4] %}
+            <li class="flex items-start gap-2 text-sm" style="color:#475569">
+              <i class="fas fa-check-circle mt-0.5 text-xs" style="color:#2563eb;flex-shrink:0"></i>
+              {{ item }}
+            </li>
+            {% endfor %}
+            {% if srv.incluye | length > 4 %}
+            <li class="text-xs" style="color:#94a3b8">
+              + {{ srv.incluye|length - 4 }} beneficio(s) más...
+            </li>
+            {% endif %}
+          </ul>
+
+          <!-- Acciones -->
+          <div class="flex gap-2">
+            <!-- Agregar / Ya en cotización -->
+            {% if en_carrito %}
+            <div class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-outfit font-600"
+                 style="background:rgba(16,185,129,0.08);color:#059669;border:1.5px solid rgba(16,185,129,0.2)">
+              <i class="fas fa-check-circle"></i>En cotización
+            </div>
+            {% else %}
+            <form method="POST" action="{{ url_for('agregar_cotizacion', sid=srv.id) }}" class="flex-1">
+              <button type="submit" class="btn-primario w-full justify-center py-2.5 text-sm">
+                <i class="fas fa-plus-circle text-xs"></i>Agregar
+              </button>
+            </form>
+            {% endif %}
+
+            <!-- Ver detalles -->
+            <a href="{{ url_for('detalle_servicio', slug=srv.slug) }}"
+               class="w-11 h-11 rounded-xl flex items-center justify-center transition-all"
+               style="background:rgba(37,99,235,0.06);color:#2563eb;border:1.5px solid rgba(37,99,235,0.15)"
+               title="Ver detalles"
+               onmouseover="this.style.background='rgba(37,99,235,0.12)'"
+               onmouseout="this.style.background='rgba(37,99,235,0.06)'">
+              <i class="fas fa-arrow-right text-sm"></i>
+            </a>
+          </div>
+        </div>
+
+      </article>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="text-center py-20">
+      <p class="text-xl font-outfit font-700 mb-2">Sin servicios en esta categoría</p>
+      <a href="{{ url_for('servicios') }}" class="btn-primario mt-4">Ver todos</a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+
+<!-- ¿Necesitas algo personalizado? ────────────── -->
+<section class="seccion seccion-fondo-alt">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="seccion-titulo titulo-hover mb-4">¿No ves lo que necesitas?</h2>
+    <p class="text-lg mb-8" style="color:#475569">
+      Diseñamos soluciones a medida. Cuéntanos tu reto y te preparamos una propuesta en 48 horas.
+    </p>
+    <a href="{{ url_for('contacto') }}" class="btn-primario">
+      <i class="fas fa-comments"></i>Hablar con un Experto
+    </a>
+  </div>
+</section>
+
+{% endblock %}

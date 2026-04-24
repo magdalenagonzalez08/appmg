@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+{% block titulo %}{{ servicio.nombre }}{% endblock %}
+
+{% block contenido %}
+
+<section class="page-header">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <a href="{{ url_for('servicios') }}"
+       class="inline-flex items-center gap-2 text-sm mb-6 transition-opacity"
+       style="color:#2563eb"
+       onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+      <i class="fas fa-arrow-left text-xs"></i>Volver al catálogo
+    </a>
+    <div class="badge badge-azul mb-4">
+      <i class="{{ servicio.icono }} text-xs"></i>{{ servicio.categoria }}
+    </div>
+    <h1 class="seccion-titulo titulo-hover mb-4">{{ servicio.nombre }}</h1>
+    <div class="seccion-linea"></div>
+  </div>
+</section>
+
+
+<section class="seccion">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-3 gap-10 items-start">
+
+      <!-- Descripción y detalles -->
+      <div class="lg:col-span-2 animar-entrada">
+
+        <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl mb-8"
+             style="background:linear-gradient(135deg,rgba(37,99,235,0.1),rgba(8,145,178,0.1));color:#2563eb">
+          <i class="{{ servicio.icono }}"></i>
+        </div>
+
+        <p class="text-xl leading-relaxed mb-10" style="color:#334155">{{ servicio.descripcion }}</p>
+
+        <!-- Qué incluye -->
+        <div class="tarjeta p-8 mb-8">
+          <h2 class="font-outfit font-700 text-lg mb-6" style="color:#0f172a">
+            <i class="fas fa-list-check mr-2" style="color:#2563eb"></i>¿Qué incluye?
+          </h2>
+          <ul class="space-y-4">
+            {% for item in servicio.incluye %}
+            <li class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full flex items-center justify-center mt-0.5 shrink-0"
+                   style="background:rgba(37,99,235,0.1);color:#2563eb">
+                <i class="fas fa-check text-xs"></i>
+              </div>
+              <span style="color:#334155">{{ item }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Preguntas frecuentes -->
+        <h2 class="font-outfit font-700 text-lg mb-5" style="color:#0f172a">Preguntas frecuentes</h2>
+        <div class="space-y-4">
+          {% for preg, resp in [
+            ('¿Cuándo podemos empezar?',     'Una vez confirmado el servicio y el pago inicial, coordinamos el inicio dentro de 24–48 horas hábiles.'),
+            ('¿El precio incluye impuestos?', 'El precio mostrado no incluye ITBMS (7%). El total con impuesto se calcula en la cotización y factura.'),
+            ('¿Hay garantía?',               'Sí. Todos los servicios incluyen un período de ajustes sin costo según los términos del contrato.'),
+          ] %}
+          <div class="tarjeta p-5">
+            <p class="font-outfit font-600 mb-2" style="color:#0f172a">{{ preg }}</p>
+            <p class="text-sm" style="color:#64748b">{{ resp }}</p>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+
+
+      <!-- Panel de compra -->
+      <div class="animar-entrada" style="transition-delay:.1s">
+        <div class="tarjeta p-7 sticky top-24">
+
+          <div class="text-center mb-6 pb-6" style="border-bottom:1px solid #f1f5f9">
+            <p class="text-xs font-semibold uppercase tracking-wider mb-2" style="color:#94a3b8">Precio</p>
+            <p class="text-4xl font-outfit font-900 texto-degradado">${{ "%.0f"|format(servicio.precio) }}</p>
+            <p class="text-sm mt-1" style="color:#94a3b8">{{ servicio.unidad }}</p>
+          </div>
+
+          <div class="space-y-3 mb-6">
+            {% for ic, label, valor in [
+              ('fas fa-clock',    'Entrega',    servicio.duracion),
+              ('fas fa-tag',      'Categoría',  servicio.categoria),
+              ('fas fa-file-alt', 'Contrato',   'Incluido con el servicio'),
+              ('fas fa-redo',     'Revisiones', 'Durante el proyecto'),
+            ] %}
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                   style="background:rgba(37,99,235,0.08);color:#2563eb">
+                <i class="{{ ic }} text-xs"></i>
+              </div>
+              <div>
+                <p class="text-xs" style="color:#94a3b8">{{ label }}</p>
+                <p class="text-sm font-semibold" style="color:#0f172a">{{ valor }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Botón agregar a cotización -->
+          {% set ids_en_carrito = carrito | map(attribute='id') | list %}
+          {% if servicio.id in ids_en_carrito %}
+          <div class="flex items-center justify-center gap-2 py-3 rounded-xl mb-3"
+               style="background:rgba(16,185,129,0.08);color:#059669;border:1.5px solid rgba(16,185,129,0.2)">
+            <i class="fas fa-check-circle"></i>
+            <span class="font-outfit font-600 text-sm">Ya está en tu cotización</span>
+          </div>
+          <a href="{{ url_for('cotizacion') }}" class="btn-secundario w-full justify-center">
+            <i class="fas fa-eye"></i>Ver Cotización
+          </a>
+          {% else %}
+          <form method="POST" action="{{ url_for('agregar_cotizacion', sid=servicio.id) }}" class="mb-3">
+            <button type="submit" class="btn-primario w-full justify-center py-3.5">
+              <i class="fas fa-plus-circle"></i>Agregar a Cotización
+            </button>
+          </form>
+          <a href="{{ url_for('contacto') }}" class="btn-secundario w-full justify-center">
+            <i class="fas fa-comments"></i>Consultar primero
+          </a>
+          {% endif %}
+
+          <p class="text-xs text-center mt-4" style="color:#94a3b8">
+            * El ITBMS (7%) se calcula al generar la cotización.
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

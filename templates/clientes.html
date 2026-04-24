@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% block titulo %}Clientes{% endblock %}
+
+{% block contenido %}
+
+<!-- Encabezado de página -->
+<section style="padding: 5rem 0 3rem; background: linear-gradient(135deg, #eff6ff 0%, #ecfeff 100%); border-bottom: 1px solid #e2e8f0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="badge badge-cian mb-4">
+      <i class="fas fa-users text-xs"></i> Nuestros Clientes
+    </div>
+    <h1 class="seccion-titulo mb-4">
+      Empresas que confían<br>
+      <span class="texto-degradado">en nuestras soluciones</span>
+    </h1>
+    <div class="seccion-linea"></div>
+    <p class="mt-5 text-lg max-w-2xl" style="color:#475569">
+      Hemos acompañado a más de 50 empresas panameñas en su transformación digital,
+      brindando seguridad, eficiencia y crecimiento tecnológico.
+    </p>
+  </div>
+</section>
+
+
+<!-- Collage tipo grid de clientes -->
+<section class="seccion">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    {% if clientes %}
+
+    <!-- Grid asimétrico (estilo collage) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-auto">
+      {% for cliente in clientes %}
+
+      <!-- Cada cuarta tarjeta ocupa 2 columnas en md+ para efecto collage -->
+      <div class="cliente-card animar-entrada tarjeta-brillo
+                  {% if loop.index == 3 or loop.index == 7 %}md:col-span-2{% endif %}"
+           style="transition-delay: {{ loop.index0 * 0.07 }}s">
+
+        <!-- Logo / Imagen -->
+        <div class="mb-4 flex items-center justify-center">
+          <div class="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center"
+               style="background: linear-gradient(135deg, #eff6ff, #ecfeff);">
+            <img src="{{ url_for('static', filename='images/' + (cliente.logo or 'cliente-default.png')) }}"
+                 alt="Logo {{ cliente.nombre }}"
+                 class="w-full h-full object-cover"
+                 onerror="this.src=''; this.parentElement.innerHTML='<i class=\'fas fa-building text-3xl\' style=\'color:#93c5fd\'></i>'">
+          </div>
+        </div>
+
+        <!-- Info -->
+        <h3 class="font-display font-700 text-base mb-1" style="color:#0f172a">{{ cliente.nombre }}</h3>
+        <p class="text-sm mb-3 line-clamp-2" style="color:#64748b">{{ cliente.descripcion }}</p>
+
+        <!-- Badge sector -->
+        <span class="badge badge-azul" style="font-size:.72rem">
+          <i class="fas fa-tag" style="font-size:.6rem"></i>
+          {{ cliente.sector }}
+        </span>
+      </div>
+
+      {% endfor %}
+    </div>
+
+    <!-- Estadística destacada -->
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+      {% for num, suf, desc, icono in [
+        ('50', '+', 'Clientes activos en toda la región', 'fas fa-building'),
+        ('98', '%', 'Tasa de retención de clientes',       'fas fa-heart'),
+        ('12', '',  'Industrias diferentes atendidas',     'fas fa-industry'),
+      ] %}
+      <div class="tarjeta p-8 text-center animar-entrada" style="transition-delay:{{ loop.index0 * 0.1 }}s">
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
+             style="background: linear-gradient(135deg,rgba(37,99,235,0.1),rgba(8,145,178,0.1)); color:#2563eb">
+          <i class="{{ icono }}"></i>
+        </div>
+        <p class="text-4xl font-display font-800 texto-degradado">
+          <span data-objetivo="{{ num }}">{{ num }}</span>{{ suf }}
+        </p>
+        <p class="text-sm mt-2" style="color:#64748b">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <!-- Estado vacío -->
+    <div class="text-center py-24">
+      <div class="w-24 h-24 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-6"
+           style="background:rgba(37,99,235,0.08); color:#2563eb">
+        <i class="fas fa-users"></i>
+      </div>
+      <h3 class="text-2xl font-display font-700 mb-3">Sin clientes registrados</h3>
+      <p class="mb-6" style="color:#64748b">Agrega clientes desde el panel de administración.</p>
+      <a href="{{ url_for('admin') }}" class="btn-primario">
+        <i class="fas fa-plus"></i>Ir al Admin
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+
+<!-- CTA Contacto -->
+<section class="seccion seccion-fondo-alt">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="seccion-titulo mb-4">¿Tu empresa quiere unirse?</h2>
+    <p class="text-lg mb-8" style="color:#475569">
+      Contáctanos y descubre cómo podemos ayudar a tu organización a alcanzar el siguiente nivel tecnológico.
+    </p>
+    <a href="{{ url_for('contacto') }}" class="btn-primario">
+      <i class="fas fa-paper-plane"></i>Contactar Ahora
+    </a>
+  </div>
+</section>
+
+{% endblock %}
