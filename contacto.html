@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+{% block titulo %}Contacto{% endblock %}
+
+{% block contenido %}
+
+<!-- Encabezado -->
+<section style="padding: 5rem 0 3rem; background: linear-gradient(135deg, #eff6ff, #ecfeff); border-bottom: 1px solid #e2e8f0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="badge badge-azul mb-4">
+      <i class="fas fa-envelope text-xs"></i> Contáctanos
+    </div>
+    <h1 class="seccion-titulo mb-4">
+      Hablemos sobre tu<br>
+      <span class="texto-degradado">próximo proyecto</span>
+    </h1>
+    <div class="seccion-linea"></div>
+    <p class="mt-5 text-lg max-w-xl" style="color:#475569">
+      Estamos listos para ayudarte. Escríbenos y un experto se comunicará contigo en menos de 24 horas.
+    </p>
+  </div>
+</section>
+
+
+<!-- Contenido principal -->
+<section class="seccion">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-5 gap-12 items-start">
+
+      <!-- ── Columna izquierda: Info de contacto ── -->
+      <div class="lg:col-span-2 space-y-8">
+
+        <!-- Datos de contacto -->
+        <div class="tarjeta p-8 animar-entrada">
+          <h2 class="font-display font-700 text-xl mb-6" style="color:#0f172a">Información de Contacto</h2>
+
+          <div class="space-y-5">
+            {% for icono, etiqueta, valor, color in [
+              ('fas fa-map-marker-alt', 'Dirección',  'Punta Pacífica, Ciudad de Panamá, Panamá', '#ef4444'),
+              ('fas fa-phone-alt',      'Teléfono',   '+507 6000-0000',                           '#22c55e'),
+              ('fas fa-envelope',       'Correo',     'info@sucesosymas.com',                     '#2563eb'),
+              ('fas fa-clock',          'Horario',    'Lun – Vie: 8:00 AM – 6:00 PM',            '#f59e0b'),
+            ] %}
+            <div class="flex items-start gap-4">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                   style="background:{{ color }}15; color:{{ color }}">
+                <i class="{{ icono }} text-sm"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-wider mb-0.5" style="color:#94a3b8">{{ etiqueta }}</p>
+                <p class="text-sm font-medium" style="color:#0f172a">{{ valor }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="tarjeta p-8 animar-entrada" style="transition-delay:.1s">
+          <h2 class="font-display font-700 text-base mb-5" style="color:#0f172a">Síguenos en Redes</h2>
+          <div class="grid grid-cols-2 gap-3">
+            {% for red, icono, color, handle in [
+              ('LinkedIn',  'fab fa-linkedin-in', '#0077b5', '@sucesosymas'),
+              ('Twitter/X', 'fab fa-twitter',     '#1da1f2', '@sucesosymas'),
+              ('GitHub',    'fab fa-github',       '#24292e', 'sucesosymas'),
+              ('Instagram', 'fab fa-instagram',    '#e1306c', '@sucesosymas'),
+            ] %}
+            <a href="#"
+               class="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group"
+               style="border: 1px solid #e2e8f0"
+               onmouseover="this.style.borderColor='{{ color }}30'; this.style.background='{{ color }}0a'"
+               onmouseout="this.style.borderColor='#e2e8f0'; this.style.background=''">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                   style="background:{{ color }}15; color:{{ color }}">
+                <i class="{{ icono }}"></i>
+              </div>
+              <div>
+                <p class="text-xs font-semibold" style="color:#0f172a">{{ red }}</p>
+                <p class="text-xs" style="color:#94a3b8">{{ handle }}</p>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Respuesta rápida -->
+        <div class="p-5 rounded-2xl flex items-center gap-4"
+             style="background: linear-gradient(135deg, #eff6ff, #ecfeff); border: 1px solid rgba(37,99,235,0.15)">
+          <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0"
+               style="background: linear-gradient(135deg, #2563eb, #0891b2); color:white">
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div>
+            <p class="font-display font-700 text-sm" style="color:#1e40af">Respuesta en &lt; 24h</p>
+            <p class="text-xs mt-0.5" style="color:#64748b">Nos comprometemos a responder todas las consultas dentro de un día hábil.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Columna derecha: Formulario ── -->
+      <div class="lg:col-span-3">
+        <div class="tarjeta p-8 md:p-10 animar-entrada" style="transition-delay:.15s">
+          <h2 class="font-display font-700 text-xl mb-2" style="color:#0f172a">Envíanos un mensaje</h2>
+          <p class="text-sm mb-8" style="color:#64748b">Todos los campos marcados con * son obligatorios.</p>
+
+          <form method="POST" action="{{ url_for('contacto') }}" class="space-y-5" novalidate>
+
+            <!-- Nombre y empresa -->
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="campo-label" for="nombre">Nombre completo *</label>
+                <input type="text" id="nombre" name="nombre" required
+                       placeholder="Juan Pérez"
+                       class="campo-input">
+              </div>
+              <div>
+                <label class="campo-label" for="empresa">Empresa</label>
+                <input type="text" id="empresa" name="empresa"
+                       placeholder="Mi Empresa S.A."
+                       class="campo-input">
+              </div>
+            </div>
+
+            <!-- Correo y teléfono -->
+            <div class="grid sm:grid-cols-2 gap-5">
+              <div>
+                <label class="campo-label" for="correo">Correo electrónico *</label>
+                <input type="email" id="correo" name="correo" required
+                       placeholder="juan@empresa.com"
+                       class="campo-input">
+              </div>
+              <div>
+                <label class="campo-label" for="telefono">Teléfono</label>
+                <input type="tel" id="telefono" name="telefono"
+                       placeholder="+507 6000-0000"
+                       class="campo-input">
+              </div>
+            </div>
+
+            <!-- Servicio de interés -->
+            <div>
+              <label class="campo-label" for="servicio">Servicio de interés *</label>
+              <select id="servicio" name="servicio" required class="campo-input" style="appearance:none; cursor:pointer">
+                <option value="" disabled selected>Selecciona un servicio...</option>
+                <option>Ciberseguridad</option>
+                <option>Desarrollo Web</option>
+                <option>Infraestructura Docker</option>
+                <option>Cloud &amp; Servidores</option>
+                <option>Redes &amp; Conectividad</option>
+                <option>Consultoría Digital</option>
+                <option>Otro</option>
+              </select>
+            </div>
+
+            <!-- Presupuesto -->
+            <div>
+              <label class="campo-label">Presupuesto estimado</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-1">
+                {% for rango in ['< $1,000', '$1,000 – $5,000', '$5,000 – $20,000', '> $20,000'] %}
+                <label class="flex items-center gap-2 p-3 rounded-xl cursor-pointer transition-all text-sm"
+                       style="border: 1.5px solid #e2e8f0"
+                       onmouseover="this.style.borderColor='#93c5fd'"
+                       onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='#e2e8f0'">
+                  <input type="radio" name="presupuesto" value="{{ rango }}"
+                         class="accent-blue-600"
+                         onchange="document.querySelectorAll('[name=presupuesto]~*').forEach(l=>l.style.borderColor='#e2e8f0'); this.parentElement.style.borderColor='#2563eb'">
+                  <span style="color:#475569">{{ rango }}</span>
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Mensaje -->
+            <div>
+              <label class="campo-label" for="mensaje">Mensaje *</label>
+              <textarea id="mensaje" name="mensaje" required rows="5"
+                        placeholder="Cuéntanos sobre tu proyecto, necesidades o preguntas..."
+                        class="campo-input resize-none"></textarea>
+            </div>
+
+            <!-- Checkbox términos -->
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" name="terminos" required class="mt-1 accent-blue-600 w-4 h-4">
+              <span class="text-sm" style="color:#64748b">
+                Acepto la <a href="#" style="color:#2563eb" class="hover:underline">Política de Privacidad</a>
+                y el tratamiento de mis datos para recibir respuesta a esta consulta.
+              </span>
+            </label>
+
+            <!-- Botón enviar -->
+            <button type="submit" class="btn-primario w-full justify-center py-4 text-base">
+              <i class="fas fa-paper-plane"></i>Enviar Mensaje
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,589 @@
+{% extends "layout.html" %}
+{% block titulo %}Panel de Administración{% endblock %}
+
+{% block contenido %}
+
+<!-- Cabecera -->
+<section style="padding:3rem 0 2rem;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);border-bottom:1px solid rgba(255,255,255,0.05)">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2.5 mb-2">
+          <div class="logo-icon">S<span class="text-xs">+</span></div>
+          <span class="text-xs font-semibold uppercase tracking-widest" style="color:#64748b">Panel Interno</span>
+        </div>
+        <h1 class="text-3xl font-outfit font-800 text-white">
+          Administración
+          <span style="background:linear-gradient(135deg,#60a5fa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">
+            SUCESOS y MÁS
+          </span>
+        </h1>
+        <p class="mt-1 text-sm" style="color:#94a3b8">CRUD de noticias, clientes y registro de cotizaciones.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="flex items-center gap-1.5 text-xs" style="color:#22c55e">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>Sistema operativo
+        </span>
+        <a href="{{ url_for('index') }}" class="btn-secundario text-sm py-2 px-4"
+           style="border-color:rgba(255,255,255,0.2);color:white"
+           onmouseover="this.style.background='rgba(255,255,255,0.07)'"
+           onmouseout="this.style.background='transparent'">
+          <i class="fas fa-external-link-alt text-xs"></i>Ver sitio
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <!-- Estadísticas -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-10">
+    {% for icono, num, label, bg, col in [
+      ('fas fa-newspaper',  total_noticias,     'Noticias',         'rgba(37,99,235,0.09)',  '#2563eb'),
+      ('fas fa-users',      total_clientes,     'Clientes',         'rgba(8,145,178,0.09)',  '#0891b2'),
+      ('fas fa-receipt',    total_cotizaciones, 'Cotizaciones',     'rgba(16,185,129,0.09)', '#059669'),
+      ('fas fa-cogs',       total_servicios,    'Servicios activos','rgba(245,158,11,0.09)', '#d97706'),
+    ] %}
+    <div class="stat-card animar-entrada" style="transition-delay:{{ loop.index0 * 0.06 }}s">
+      <div class="stat-icono" style="background:{{ bg }};color:{{ col }}">
+        <i class="{{ icono }}"></i>
+      </div>
+      <div>
+        <p class="text-2xl font-outfit font-800" style="color:#0f172a">{{ num }}</p>
+        <p class="text-xs mt-0.5" style="color:#64748b">{{ label }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+
+  <!-- Pestañas -->
+  <div class="flex gap-2 mb-8 border-b" style="border-color:#e2e8f0">
+    <button class="tab-btn activo" data-tab="noticias">
+      <i class="fas fa-newspaper mr-1.5"></i>Noticias
+    </button>
+    <button class="tab-btn" data-tab="clientes">
+      <i class="fas fa-users mr-1.5"></i>Clientes
+    </button>
+    <button class="tab-btn" data-tab="cotizaciones">
+      <i class="fas fa-receipt mr-1.5"></i>Cotizaciones
+    </button>
+  </div>
+
+
+  <!-- ══════════════════ PESTAÑA: NOTICIAS ══════════════════ -->
+  <div id="tab-noticias" class="tab-content">
+    <div class="grid lg:grid-cols-5 gap-8 items-start">
+
+      <!-- Formulario nueva noticia -->
+      <div class="lg:col-span-2">
+        <div class="tarjeta p-8 animar-entrada sticky top-24">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                 style="background:linear-gradient(135deg,#2563eb,#0891b2);color:white">
+              <i class="fas fa-plus"></i>
+            </div>
+            <h2 class="font-outfit font-700 text-lg" style="color:#0f172a">Nueva Noticia</h2>
+          </div>
+
+          <form method="POST" action="{{ url_for('admin') }}" novalidate>
+            <input type="hidden" name="accion" value="agregar_noticia">
+            <div class="space-y-4">
+
+              <div>
+                <label class="campo-label" for="titulo">
+                  Título <span style="color:#ef4444">*</span>
+                  <span class="font-normal text-xs ml-1" style="color:#94a3b8">(10–120 car.)</span>
+                </label>
+                <input type="text" id="titulo" name="titulo" required
+                       minlength="10" maxlength="120"
+                       placeholder="Ej: Nueva vulnerabilidad crítica detectada..."
+                       class="campo-input">
+              </div>
+
+              <div>
+                <label class="campo-label" for="categoria">Categoría</label>
+                <select name="categoria" class="campo-input" style="cursor:pointer">
+                  {% for cat in ['General','Ciberseguridad','Infraestructura','Desarrollo Web','Cloud','Empresa'] %}
+                  <option>{{ cat }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div>
+                <label class="campo-label" for="campo-imagen">Imagen <span class="font-normal text-xs" style="color:#94a3b8">(nombre del archivo)</span></label>
+                <input type="text" id="campo-imagen" name="imagen" placeholder="noticia1.png" class="campo-input">
+                <img id="prev-imagen" class="hidden mt-2 h-20 w-full object-cover rounded-lg"
+                     style="border:1px solid #e2e8f0" alt="Vista previa">
+              </div>
+
+              <div>
+                <label class="campo-label" for="fuente">Fuente <span class="font-normal text-xs" style="color:#94a3b8">(URL o nombre)</span></label>
+                <input type="text" id="fuente" name="fuente"
+                       placeholder="https://eset.com o ESET Latinoamérica"
+                       class="campo-input">
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="campo-label mb-0" for="contenido">Contenido <span style="color:#ef4444">*</span></label>
+                  <span id="contador-chars" class="text-xs" style="color:#94a3b8">0/2000</span>
+                </div>
+                <textarea id="contenido" name="contenido" required minlength="30" maxlength="2000"
+                          rows="5" placeholder="Escribe el contenido de la noticia (mín. 30 caracteres)..."
+                          class="campo-input resize-none"></textarea>
+              </div>
+
+              <button type="submit" class="btn-primario w-full justify-center py-3.5">
+                <i class="fas fa-paper-plane"></i>Publicar Noticia
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <!-- Lista de noticias -->
+      <div class="lg:col-span-3 animar-entrada" style="transition-delay:.1s">
+        <h2 class="font-outfit font-700 text-xl mb-5" style="color:#0f172a">
+          Noticias publicadas
+          <span class="text-sm font-normal ml-2" style="color:#94a3b8">({{ total_noticias }})</span>
+        </h2>
+
+        {% if noticias %}
+        <div class="space-y-4">
+          {% for n in noticias %}
+          <div class="tarjeta p-5" id="noticia-{{ n.id }}">
+
+            <!-- Vista normal -->
+            <div class="vista-normal-{{ n.id }}">
+              <div class="flex items-start gap-4">
+
+                <!-- Miniatura -->
+                <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 flex items-center justify-center"
+                     style="background:rgba(37,99,235,0.06)">
+                  <img src="{{ url_for('static', filename='images/' + (n.imagen or 'noticia-default.png')) }}"
+                       alt="" class="w-full h-full object-cover"
+                       onerror="this.src='';this.parentElement.innerHTML='<i class=\'fas fa-newspaper text-2xl\' style=\'color:#c7d2fe\'></i>'">
+                </div>
+
+                <!-- Datos -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0 flex-1">
+                      <div class="flex items-center flex-wrap gap-2 mb-1">
+                        <span class="badge badge-azul" style="font-size:.65rem">{{ n.categoria }}</span>
+                        <span class="text-xs" style="color:#94a3b8">{{ n.fecha }}</span>
+                      </div>
+                      <h3 class="font-outfit font-700 text-sm leading-snug mb-1" style="color:#0f172a">
+                        {{ n.titulo }}
+                      </h3>
+                      <p class="text-xs mb-1" style="color:#64748b;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">
+                        {{ n.contenido }}
+                      </p>
+                      {% if n.fuente %}
+                      <p class="text-xs flex items-center gap-1 mt-1" style="color:#0891b2">
+                        <i class="fas fa-link text-xs"></i>
+                        {% if n.fuente.startswith('http') %}
+                          <a href="{{ n.fuente }}" target="_blank" rel="noopener"
+                             class="hover:underline truncate max-w-xs">{{ n.fuente }}</a>
+                        {% else %}
+                          {{ n.fuente }}
+                        {% endif %}
+                      </p>
+                      {% endif %}
+                    </div>
+
+                    <!-- Botones acción -->
+                    <div class="flex flex-col gap-2 shrink-0 ml-2">
+
+                      <!-- Editar -->
+                      <button type="button"
+                              onclick="mostrarEdicion({{ n.id }}, {{ n.titulo|tojson }}, {{ n.contenido|tojson }}, {{ n.categoria|tojson }}, {{ (n.fuente or '')|tojson }})"
+                              class="w-8 h-8 rounded-lg flex items-center justify-center text-xs transition-all"
+                              style="background:rgba(37,99,235,0.08);color:#2563eb;border:1px solid rgba(37,99,235,0.2)"
+                              onmouseover="this.style.background='rgba(37,99,235,0.2)'"
+                              onmouseout="this.style.background='rgba(37,99,235,0.08)'"
+                              title="Editar noticia">
+                        <i class="fas fa-pencil-alt"></i>
+                      </button>
+
+                      <!-- Eliminar -->
+                      <form method="POST" action="{{ url_for('admin') }}">
+                        <input type="hidden" name="accion" value="eliminar_noticia">
+                        <input type="hidden" name="noticia_id" value="{{ n.id }}">
+                        <button type="submit"
+                                class="btn-eliminar w-8 h-8 rounded-lg flex items-center justify-center text-xs transition-all"
+                                style="background:rgba(239,68,68,0.07);color:#ef4444;border:1px solid rgba(239,68,68,0.18)"
+                                onmouseover="this.style.background='rgba(239,68,68,0.18)'"
+                                onmouseout="this.style.background='rgba(239,68,68,0.07)'"
+                                title="Eliminar noticia">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </form>
+
+                      <span class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-outfit font-700"
+                            style="background:rgba(37,99,235,0.07);color:#2563eb" title="ID">
+                        #{{ n.id }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- Formulario de edición (oculto por defecto) -->
+            <div class="form-edicion-{{ n.id }} hidden mt-4 pt-4" style="border-top:1px solid #e2e8f0">
+              <div class="flex items-center gap-2 mb-4">
+                <i class="fas fa-pencil-alt text-sm" style="color:#2563eb"></i>
+                <p class="font-outfit font-700 text-sm" style="color:#0f172a">Editar noticia #{{ n.id }}</p>
+              </div>
+
+              <form method="POST" action="{{ url_for('admin') }}" novalidate>
+                <input type="hidden" name="accion" value="editar_noticia">
+                <input type="hidden" name="noticia_id" value="{{ n.id }}">
+                <div class="space-y-3">
+
+                  <div>
+                    <label class="campo-label text-xs" for="edit-titulo-{{ n.id }}">Título *</label>
+                    <input type="text" id="edit-titulo-{{ n.id }}" name="titulo"
+                           value="{{ n.titulo }}" required minlength="10" maxlength="120"
+                           class="campo-input text-sm">
+                  </div>
+
+                  <div>
+                    <label class="campo-label text-xs">Categoría</label>
+                    <select name="categoria" class="campo-input text-sm" style="cursor:pointer">
+                      {% for cat in ['General','Ciberseguridad','Infraestructura','Desarrollo Web','Cloud','Empresa'] %}
+                      <option {% if cat == n.categoria %}selected{% endif %}>{{ cat }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="campo-label text-xs">Fuente <span class="font-normal" style="color:#94a3b8">(URL o nombre)</span></label>
+                    <input type="text" name="fuente" value="{{ n.fuente or '' }}"
+                           placeholder="https://... o nombre del medio"
+                           class="campo-input text-sm">
+                  </div>
+
+                  <div>
+                    <label class="campo-label text-xs">Contenido *</label>
+                    <textarea name="contenido" required minlength="30" maxlength="2000"
+                              rows="4" class="campo-input text-sm resize-none">{{ n.contenido }}</textarea>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <button type="submit" class="btn-primario text-sm py-2 flex-1 justify-center">
+                      <i class="fas fa-save"></i>Guardar cambios
+                    </button>
+                    <button type="button"
+                            onclick="ocultarEdicion({{ n.id }})"
+                            class="btn-secundario text-sm py-2 px-4">
+                      <i class="fas fa-times"></i>Cancelar
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+          </div>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="tarjeta p-16 text-center">
+          <i class="fas fa-inbox text-4xl mb-4" style="color:#cbd5e1"></i>
+          <p class="font-outfit font-700" style="color:#94a3b8">No hay noticias aún</p>
+          <p class="text-sm mt-1" style="color:#cbd5e1">Usa el formulario para publicar la primera.</p>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════ PESTAÑA: CLIENTES ══════════════════ -->
+  <div id="tab-clientes" class="tab-content hidden">
+    <div class="grid lg:grid-cols-5 gap-8 items-start">
+
+      <!-- Formulario nuevo cliente -->
+      <div class="lg:col-span-2">
+        <div class="tarjeta p-8 animar-entrada sticky top-24">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                 style="background:linear-gradient(135deg,#0891b2,#0e7490);color:white">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="font-outfit font-700 text-lg" style="color:#0f172a">Nuevo Cliente</h2>
+          </div>
+
+          <form method="POST" action="{{ url_for('admin') }}" novalidate>
+            <input type="hidden" name="accion" value="agregar_cliente">
+            <div class="space-y-4">
+              <div>
+                <label class="campo-label" for="cli-nombre">Nombre <span style="color:#ef4444">*</span></label>
+                <input type="text" id="cli-nombre" name="cli_nombre" required
+                       placeholder="Ej: TechCorp Panamá" class="campo-input">
+              </div>
+              <div>
+                <label class="campo-label">Sector</label>
+                <select name="cli_sector" class="campo-input" style="cursor:pointer">
+                  {% for s in ['Tecnología','Consultoría','Finanzas','Logística','Salud','Gobierno','Educación','Retail','Startups','Otro'] %}
+                  <option>{{ s }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div>
+                <label class="campo-label">Logo <span class="font-normal text-xs" style="color:#94a3b8">(nombre del archivo)</span></label>
+                <input type="text" name="cli_logo" placeholder="cliente1.png" class="campo-input">
+              </div>
+              <div>
+                <label class="campo-label">Descripción</label>
+                <input type="text" name="cli_descripcion"
+                       placeholder="Ej: Soluciones empresariales integrales" class="campo-input">
+              </div>
+              <button type="submit" class="btn-primario w-full justify-center py-3.5">
+                <i class="fas fa-plus-circle"></i>Agregar Cliente
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Lista de clientes -->
+      <div class="lg:col-span-3">
+        <h2 class="font-outfit font-700 text-xl mb-5" style="color:#0f172a">
+          Clientes registrados
+          <span class="text-sm font-normal ml-2" style="color:#94a3b8">({{ total_clientes }})</span>
+        </h2>
+
+        {% if todos_clientes %}
+        <div class="space-y-3">
+          {% for c in todos_clientes %}
+          <div class="tarjeta p-4" id="cliente-{{ c.id }}">
+
+            <!-- Vista normal del cliente -->
+            <div class="vista-cli-normal-{{ c.id }}">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center shrink-0"
+                     style="background:rgba(8,145,178,0.06)">
+                  <img src="{{ url_for('static', filename='images/' + (c.logo or 'cliente-default.png')) }}"
+                       alt="" class="w-full h-full object-cover"
+                       onerror="this.src='';this.parentElement.innerHTML='<i class=\'fas fa-building text-lg\' style=\'color:#67e8f9\'></i>'">
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="font-outfit font-700 text-sm" style="color:#0f172a">{{ c.nombre }}</p>
+                  <p class="text-xs" style="color:#64748b">{{ c.descripcion or 'Sin descripción' }}</p>
+                  <span class="badge badge-cian mt-1" style="font-size:.6rem">{{ c.sector }}</span>
+                </div>
+                <div class="flex gap-2 shrink-0">
+                  <!-- Editar cliente -->
+                  <button type="button"
+                          onclick="mostrarEdicionCliente({{ c.id }}, {{ c.nombre|tojson }}, {{ (c.logo or 'cliente-default.png')|tojson }}, {{ (c.descripcion or '')|tojson }}, {{ c.sector|tojson }})"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-xs transition-all"
+                          style="background:rgba(8,145,178,0.08);color:#0891b2;border:1px solid rgba(8,145,178,0.2)"
+                          onmouseover="this.style.background='rgba(8,145,178,0.2)'"
+                          onmouseout="this.style.background='rgba(8,145,178,0.08)'"
+                          title="Editar cliente">
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                  <!-- Eliminar cliente -->
+                  <form method="POST" action="{{ url_for('admin') }}">
+                    <input type="hidden" name="accion" value="eliminar_cliente">
+                    <input type="hidden" name="cliente_id" value="{{ c.id }}">
+                    <button type="submit"
+                            class="btn-eliminar w-8 h-8 rounded-lg flex items-center justify-center text-xs transition-all"
+                            style="background:rgba(239,68,68,0.07);color:#ef4444;border:1px solid rgba(239,68,68,0.18)"
+                            onmouseover="this.style.background='rgba(239,68,68,0.18)'"
+                            onmouseout="this.style.background='rgba(239,68,68,0.07)'"
+                            title="Eliminar cliente">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulario edición cliente (oculto) -->
+            <div class="form-edicion-cli-{{ c.id }} hidden mt-4 pt-4" style="border-top:1px solid #e2e8f0">
+              <p class="font-outfit font-700 text-sm mb-3" style="color:#0f172a">
+                <i class="fas fa-pencil-alt mr-2" style="color:#0891b2"></i>Editar cliente #{{ c.id }}
+              </p>
+              <form method="POST" action="{{ url_for('admin') }}" novalidate>
+                <input type="hidden" name="accion" value="editar_cliente">
+                <input type="hidden" name="cliente_id" value="{{ c.id }}">
+                <div class="grid sm:grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <label class="campo-label text-xs">Nombre *</label>
+                    <input type="text" name="cli_nombre" id="edit-cli-nombre-{{ c.id }}"
+                           value="{{ c.nombre }}" required class="campo-input text-sm">
+                  </div>
+                  <div>
+                    <label class="campo-label text-xs">Sector</label>
+                    <select name="cli_sector" id="edit-cli-sector-{{ c.id }}" class="campo-input text-sm" style="cursor:pointer">
+                      {% for s in ['Tecnología','Consultoría','Finanzas','Logística','Salud','Gobierno','Educación','Retail','Startups','Otro'] %}
+                      <option {% if s == c.sector %}selected{% endif %}>{{ s }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="campo-label text-xs">Logo</label>
+                    <input type="text" name="cli_logo" id="edit-cli-logo-{{ c.id }}"
+                           value="{{ c.logo or 'cliente-default.png' }}" class="campo-input text-sm">
+                  </div>
+                  <div>
+                    <label class="campo-label text-xs">Descripción</label>
+                    <input type="text" name="cli_descripcion" id="edit-cli-desc-{{ c.id }}"
+                           value="{{ c.descripcion or '' }}" class="campo-input text-sm">
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button type="submit" class="btn-primario text-sm py-2 flex-1 justify-center">
+                    <i class="fas fa-save"></i>Guardar
+                  </button>
+                  <button type="button" onclick="ocultarEdicionCliente({{ c.id }})"
+                          class="btn-secundario text-sm py-2 px-4">
+                    <i class="fas fa-times"></i>Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+          {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="tarjeta p-12 text-center">
+          <i class="fas fa-users text-4xl mb-4" style="color:#cbd5e1"></i>
+          <p class="font-outfit font-700" style="color:#94a3b8">No hay clientes registrados</p>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════ PESTAÑA: COTIZACIONES ══════════════════ -->
+  <div id="tab-cotizaciones" class="tab-content hidden">
+    <h2 class="font-outfit font-700 text-xl mb-6" style="color:#0f172a">
+      Cotizaciones registradas
+      <span class="text-sm font-normal ml-2" style="color:#94a3b8">(últimas 10)</span>
+    </h2>
+
+    {% if cotizaciones %}
+    <div class="space-y-4">
+      {% for cot in cotizaciones %}
+      <div class="tarjeta p-5 animar-entrada" style="transition-delay:{{ loop.index0 * 0.05 }}s">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                 style="background:rgba(16,185,129,0.09);color:#059669">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+              <p class="font-outfit font-700 text-sm" style="color:#0f172a">{{ cot.referencia }}</p>
+              <p class="text-xs" style="color:#64748b">{{ cot.fecha }}</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-6 flex-wrap">
+            <div class="text-right">
+              <p class="text-xs" style="color:#94a3b8">Total</p>
+              <p class="font-outfit font-800 texto-degradado">${{ "%.2f"|format(cot.total) }}</p>
+            </div>
+            <span class="badge badge-verde">{{ cot.estado }}</span>
+            <a href="{{ url_for('ver_factura', cot_id=cot.id) }}"
+               class="btn-secundario text-xs py-1.5 px-3">
+              <i class="fas fa-file-invoice text-xs"></i>Ver factura
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="tarjeta p-16 text-center">
+      <i class="fas fa-receipt text-4xl mb-4" style="color:#cbd5e1"></i>
+      <p class="font-outfit font-700" style="color:#94a3b8">No hay cotizaciones confirmadas aún</p>
+      <p class="text-sm mt-1 mb-5" style="color:#cbd5e1">Las cotizaciones confirmadas desde el sitio aparecerán aquí.</p>
+      <a href="{{ url_for('servicios') }}" class="btn-primario">
+        <i class="fas fa-th-large"></i>Ver catálogo de servicios
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- Nota sobre servicios del catálogo -->
+    <div class="mt-8 p-5 rounded-2xl" style="background:#f8fafc;border:1px solid #e2e8f0">
+      <p class="text-sm" style="color:#64748b">
+        <i class="fas fa-info-circle mr-2" style="color:#0891b2"></i>
+        El catálogo de servicios está definido en
+        <code class="font-mono text-xs px-1.5 py-0.5 rounded" style="background:#e2e8f0">app.py → CATALOGO</code>.
+        <a href="{{ url_for('servicios') }}" class="ml-2 font-semibold" style="color:#2563eb">Ver catálogo →</a>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Estilos de pestañas -->
+<style>
+.tab-btn {
+  padding: .5rem 1.25rem; border-bottom: 2px solid transparent;
+  font-family: 'Outfit', sans-serif; font-weight: 600; font-size: .88rem;
+  color: #64748b; cursor: pointer; background: none; border-top: none;
+  border-left: none; border-right: none; transition: all .2s ease;
+}
+.tab-btn:hover { color: #2563eb; }
+.tab-btn.activo { color: #2563eb; border-bottom-color: #2563eb; }
+</style>
+
+{% endblock %}
+
+
+{% block scripts_extra %}
+<script>
+// Pestañas del admin
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Desactivar todos
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+    // Activar el seleccionado
+    btn.classList.add('activo');
+    document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+  });
+});
+
+// Mostrar formulario de edición de noticia
+function mostrarEdicion(id, titulo, contenido, categoria, fuente) {
+  document.querySelector('.vista-normal-' + id).classList.add('hidden');
+  document.querySelector('.form-edicion-' + id).classList.remove('hidden');
+}
+
+// Ocultar formulario de edición de noticia
+function ocultarEdicion(id) {
+  document.querySelector('.vista-normal-' + id).classList.remove('hidden');
+  document.querySelector('.form-edicion-' + id).classList.add('hidden');
+}
+
+// Mostrar formulario de edición de cliente
+function mostrarEdicionCliente(id, nombre, logo, desc, sector) {
+  document.querySelector('.vista-cli-normal-' + id).classList.add('hidden');
+  document.querySelector('.form-edicion-cli-' + id).classList.remove('hidden');
+}
+
+// Ocultar formulario de edición de cliente
+function ocultarEdicionCliente(id) {
+  document.querySelector('.vista-cli-normal-' + id).classList.remove('hidden');
+  document.querySelector('.form-edicion-cli-' + id).classList.add('hidden');
+}
+</script>
+{% endblock %}

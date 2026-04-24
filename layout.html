@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}SUCESOS y MÁS{% endblock %} | Tecnología & Ciberseguridad</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!--
+    TIPOGRAFÍA — Outfit (títulos, botones, navbar) + Nunito Sans (cuerpo) + JetBrains Mono (datos técnicos/facturas)
+    Outfit: moderna, corporativa, usada por empresas SaaS serias.
+    Nunito Sans: legible, profesional, no genérica.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,500;6..12,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- CSS personalizado -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/input.css') }}">
+
+  {% block estilos_extra %}{% endblock %}
+</head>
+<body>
+
+<!-- Fondo animado -->
+<div class="fondo-animado" aria-hidden="true">
+  <div class="orbe orbe-1"></div>
+  <div class="orbe orbe-2"></div>
+  <div class="orbe orbe-3"></div>
+  <svg class="svg-ondas" viewBox="0 0 2880 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path fill="none" stroke="#2563eb" stroke-width="1.5"
+          d="M0,160 C240,100 480,220 720,160 C960,100 1200,220 1440,160 C1680,100 1920,220 2160,160 C2400,100 2640,200 2880,160"/>
+    <path fill="none" stroke="#0891b2" stroke-width="1" opacity="0.4"
+          d="M0,200 C240,140 480,260 720,200 C960,140 1200,260 1440,200 C1680,140 1920,260 2160,200 C2400,140 2640,220 2880,200"/>
+  </svg>
+</div>
+
+
+<!-- NAVBAR ─────────────────────────────────────────── -->
+<nav class="navbar" role="navigation">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="{{ url_for('index') }}" class="flex items-center gap-2.5">
+        <div class="logo-icon">S<span class="text-xs">+</span></div>
+        <span class="nav-logo-texto">SUCESOS y MÁS</span>
+      </a>
+
+      <!-- Nav desktop -->
+      <div class="hidden md:flex items-center gap-6">
+        <a href="{{ url_for('index') }}"     class="nav-link">Inicio</a>
+        <a href="{{ url_for('clientes') }}"  class="nav-link">Clientes</a>
+        <a href="{{ url_for('servicios') }}" class="nav-link">Servicios</a>
+        <a href="{{ url_for('contacto') }}"  class="nav-link">Contacto</a>
+        <a href="{{ url_for('ubicacion') }}" class="nav-link">Ubicación</a>
+      </div>
+
+      <!-- Botones derecha -->
+      <div class="hidden md:flex items-center gap-2">
+
+        <!-- Botón carrito de cotización -->
+        <button id="btn-carrito" class="carrito-btn" aria-label="Ver cotización">
+          <i class="fas fa-clipboard-list text-base"></i>
+          {% if total_items_carrito > 0 %}
+          <span class="carrito-badge">{{ total_items_carrito }}</span>
+          {% endif %}
+          <span class="text-sm font-semibold ml-1">Cotización</span>
+          {% if subtotal_carrito > 0 %}
+          <span class="text-xs ml-1 opacity-70">${{ "%.0f"|format(subtotal_carrito) }}</span>
+          {% endif %}
+        </button>
+
+        <a href="{{ url_for('admin') }}" class="btn-primario text-sm py-2 px-4">
+          <i class="fas fa-shield-alt text-xs"></i>Admin
+        </a>
+      </div>
+
+      <!-- Hamburguesa móvil -->
+      <div class="md:hidden flex items-center gap-2">
+        <button id="btn-carrito-movil" class="carrito-btn-movil" aria-label="Cotización">
+          <i class="fas fa-clipboard-list"></i>
+          {% if total_items_carrito > 0 %}
+          <span class="carrito-badge">{{ total_items_carrito }}</span>
+          {% endif %}
+        </button>
+        <button id="btn-menu" class="p-2 rounded-lg hover:bg-blue-50 transition-colors" aria-label="Menú">
+          <i class="fas fa-bars text-slate-600"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menú móvil -->
+    <div id="menu-movil" class="hidden md:hidden pb-4 border-t border-slate-100 mt-2">
+      <div class="flex flex-col gap-1 pt-3">
+        <a href="{{ url_for('index') }}"     class="nav-link px-3 py-2.5 rounded-lg hover:bg-blue-50 block">Inicio</a>
+        <a href="{{ url_for('clientes') }}"  class="nav-link px-3 py-2.5 rounded-lg hover:bg-blue-50 block">Clientes</a>
+        <a href="{{ url_for('servicios') }}" class="nav-link px-3 py-2.5 rounded-lg hover:bg-blue-50 block">Servicios</a>
+        <a href="{{ url_for('contacto') }}"  class="nav-link px-3 py-2.5 rounded-lg hover:bg-blue-50 block">Contacto</a>
+        <a href="{{ url_for('ubicacion') }}" class="nav-link px-3 py-2.5 rounded-lg hover:bg-blue-50 block">Ubicación</a>
+        <div class="flex gap-2 mt-3 pt-3 border-t border-slate-100">
+          <a href="{{ url_for('cotizacion') }}" class="btn-secundario text-sm flex-1 justify-center">
+            <i class="fas fa-clipboard-list"></i>Ver Cotización
+          </a>
+          <a href="{{ url_for('admin') }}" class="btn-primario text-sm flex-1 justify-center">Admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- PANEL LATERAL DE COTIZACIÓN ─────────────────── -->
+<div id="overlay-carrito" class="panel-overlay hidden"></div>
+
+<div id="panel-carrito" class="panel-cotizacion" aria-label="Panel de cotización">
+  <div class="panel-header">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(255,255,255,0.15)">
+        <i class="fas fa-clipboard-list text-white"></i>
+      </div>
+      <div>
+        <h3 class="font-outfit font-700 text-white text-base">Mi Cotización</h3>
+        <p class="text-xs" style="color:rgba(255,255,255,0.7)">
+          {% if total_items_carrito > 0 %}{{ total_items_carrito }} servicio(s) seleccionado(s){% else %}Sin servicios aún{% endif %}
+        </p>
+      </div>
+    </div>
+    <button id="btn-cerrar-panel" class="w-8 h-8 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+
+  <div class="panel-body">
+    {% if carrito %}
+      <div class="space-y-3 mb-5">
+        {% for item in carrito %}
+        <div class="panel-item">
+          <div class="flex-1">
+            <p class="font-semibold text-sm leading-snug" style="color:#0f172a">{{ item.nombre }}</p>
+            <p class="text-xs mt-0.5" style="color:#64748b">
+              ${{ "%.2f"|format(item.precio) }} × {{ item.cantidad }} {{ item.unidad }}
+            </p>
+          </div>
+          <div class="text-right">
+            <p class="font-outfit font-700 text-sm" style="color:#2563eb">
+              ${{ "%.2f"|format(item.precio * item.cantidad) }}
+            </p>
+            <form method="POST" action="{{ url_for('quitar_cotizacion', sid=item.id) }}" class="inline">
+              <button type="submit" class="text-xs mt-1 hover:text-red-500 transition-colors" style="color:#94a3b8">
+                <i class="fas fa-trash-alt mr-1"></i>Quitar
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Resumen -->
+      <div class="panel-resumen">
+        <div class="flex justify-between text-sm mb-1.5" style="color:#64748b">
+          <span>Subtotal</span><span>${{ "%.2f"|format(subtotal_carrito) }}</span>
+        </div>
+        <div class="flex justify-between text-sm mb-3" style="color:#64748b">
+          <span>ITBMS (7%)</span><span>${{ "%.2f"|format(subtotal_carrito * 0.07) }}</span>
+        </div>
+        <div class="flex justify-between font-outfit font-800 text-lg pt-3"
+             style="border-top:2px solid #e2e8f0; color:#0f172a">
+          <span>Total</span>
+          <span class="texto-degradado">${{ "%.2f"|format(subtotal_carrito * 1.07) }}</span>
+        </div>
+      </div>
+
+      <div class="space-y-2.5 mt-5">
+        <a href="{{ url_for('cotizacion') }}" class="btn-primario w-full justify-center" onclick="cerrarPanel()">
+          <i class="fas fa-eye"></i>Ver Cotización Completa
+        </a>
+        <a href="{{ url_for('factura') }}" class="btn-secundario w-full justify-center" onclick="cerrarPanel()">
+          <i class="fas fa-file-invoice"></i>Generar Factura
+        </a>
+        <a href="{{ url_for('limpiar_cotizacion') }}" class="block text-center text-xs py-2 transition-colors"
+           style="color:#94a3b8" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">
+          <i class="fas fa-times mr-1"></i>Vaciar cotización
+        </a>
+      </div>
+
+    {% else %}
+      <!-- Vacío -->
+      <div class="text-center py-10">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
+             style="background:rgba(37,99,235,0.06); color:#c7d2fe">
+          <i class="fas fa-clipboard"></i>
+        </div>
+        <p class="font-semibold mb-1" style="color:#475569">Tu cotización está vacía</p>
+        <p class="text-sm mb-5" style="color:#94a3b8">Explora nuestros servicios y agrega los que necesitas.</p>
+        <a href="{{ url_for('servicios') }}" class="btn-primario justify-center" onclick="cerrarPanel()">
+          <i class="fas fa-th-large"></i>Ver Servicios
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+
+<!-- ALERTAS FLASH ─────────────────────────────────── -->
+{% with mensajes = get_flashed_messages(with_categories=true) %}
+  {% if mensajes %}
+  <div id="zona-alertas" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 space-y-2">
+    {% for categoria, mensaje in mensajes %}
+    <div class="alerta alerta-{{ categoria }}" role="alert">
+      {% if categoria == 'exito' %}<i class="fas fa-check-circle"></i>
+      {% elif categoria == 'error' %}<i class="fas fa-exclamation-circle"></i>
+      {% else %}<i class="fas fa-info-circle"></i>{% endif %}
+      <span>{{ mensaje }}</span>
+      <button class="btn-cerrar-alerta ml-auto" aria-label="Cerrar">
+        <i class="fas fa-times text-sm opacity-60 hover:opacity-100"></i>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+
+<!-- CONTENIDO ────────────────────────────────────── -->
+<main>{% block contenido %}{% endblock %}</main>
+
+
+<!-- FOOTER ───────────────────────────────────────── -->
+<footer class="footer">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-10"
+         style="border-bottom:1px solid rgba(255,255,255,0.06)">
+
+      <div>
+        <div class="flex items-center gap-2.5 mb-4">
+          <div class="logo-icon">S<span class="text-xs">+</span></div>
+          <span class="font-outfit font-700 text-white text-lg">SUCESOS y MÁS</span>
+        </div>
+        <p class="text-sm leading-relaxed mb-5" style="color:#64748b">
+          Empresa panameña especializada en ciberseguridad, desarrollo web e infraestructura digital para el mundo corporativo.
+        </p>
+        <div class="flex gap-3">
+          {% for red, icono in [('LinkedIn','fab fa-linkedin-in'),('GitHub','fab fa-github'),('Twitter','fab fa-twitter'),('Instagram','fab fa-instagram')] %}
+          <a href="#" aria-label="{{ red }}"
+             class="w-9 h-9 rounded-lg flex items-center justify-center text-sm transition-all"
+             style="background:rgba(255,255,255,0.06);color:#94a3b8"
+             onmouseover="this.style.background='rgba(37,99,235,0.4)';this.style.color='white'"
+             onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.color='#94a3b8'">
+            <i class="{{ icono }}"></i>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <h4 class="footer-titulo text-sm">Servicios</h4>
+        {% for s in ['Ciberseguridad','Desarrollo Web','Infraestructura Docker','Consultoría IT','Cloud & Servidores'] %}
+        <a href="{{ url_for('servicios') }}" class="footer-link">{{ s }}</a>
+        {% endfor %}
+      </div>
+
+      <div>
+        <h4 class="footer-titulo text-sm">Empresa</h4>
+        {% for nombre, ruta in [('Nosotros','index'),('Clientes','clientes'),('Contacto','contacto'),('Ubicación','ubicacion'),('Facturación','factura')] %}
+        <a href="{{ url_for(ruta) }}" class="footer-link">{{ nombre }}</a>
+        {% endfor %}
+      </div>
+
+      <div>
+        <h4 class="footer-titulo text-sm">Contacto</h4>
+        {% for icono, texto in [
+          ('fas fa-map-marker-alt','Ciudad de Panamá, Panamá'),
+          ('fas fa-envelope','info@sucesosymas.com'),
+          ('fas fa-phone','+507 6000-0000'),
+          ('fas fa-clock','Lun – Vie: 8:00 – 18:00'),
+        ] %}
+        <p class="text-sm flex items-start gap-2.5 mb-2.5" style="color:#64748b">
+          <i class="{{ icono }} mt-0.5" style="color:#2563eb;flex-shrink:0"></i>{{ texto }}
+        </p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6">
+      <p class="text-xs" style="color:#475569">
+        © 2024 <strong style="color:#60a5fa">SUCESOS y MÁS S.A.</strong> · Todos los derechos reservados.
+      </p>
+      <p class="text-xs" style="color:#475569">
+        Hecho en Panamá <span style="color:#ef4444">♥</span> · Flask + Tailwind CSS
+      </p>
+    </div>
+  </div>
+</footer>
+
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts_extra %}{% endblock %}
+</body>
+</html>
